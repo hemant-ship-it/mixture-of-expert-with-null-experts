@@ -1,3 +1,9 @@
+---
+title: Shakespeare_MoE
+app_file: app.py
+sdk: gradio
+sdk_version: 6.5.1
+---
 # MOE  with Null Experts (achieving weight sparsity + data sparsity)
 
 This repo is a small implementation of the paper **[IMPROVING MOE COMPUTE EFFICIENCY BY COMPOSING WEIGHT AND DATA SPARSITY](https://arxiv.org/abs/2601.15370)** which mplements the core mechanism of **"Null Experts"** to achieve data sparsity in Mixture-of-Experts (MoE) transformers.(tested on shakespeare dataset)
@@ -251,5 +257,8 @@ and then visualize with
 python visualize.py
 ```
 
+```
+python run app.py
+```
 
 

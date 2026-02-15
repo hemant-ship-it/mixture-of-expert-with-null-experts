@@ -6,7 +6,7 @@ dist/
 wheels/
 *.egg-info
 
-# Virtual environments
+
 .venv
 
 .claude
@@ -14,3 +14,9 @@ wheels/
 *.pdf
 
 .DS_Store
+
+.gradio/
+checkpoints/
+__pycache__/
+*.pyc
+.env
