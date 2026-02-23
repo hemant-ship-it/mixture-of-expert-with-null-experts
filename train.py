@@ -186,11 +186,12 @@ class MoELayer(nn.Module):
         expanded_logits = torch.cat([real_logits, null_logit.expand(-1, self.M)], dim=-1)  # (tokens, N+M)
 
         # --- Z-loss: log-sum-exp penalty ---
-        lse = torch.logsumexp(expanded_logits, dim=-1)  # (tokens,)
+        lse = torch.logsumexp(logits_raw, dim=-1)  # (tokens,) — use pre-duplication logits
         z_loss = (lse ** 2).mean()
         # --- Top-K selection ---
-        topk_vals, topk_idxs = torch.topk(expanded_logits, self.top_k, dim=-1)  # (tokens, top_k)
-        topk_gates = F.softmax(topk_vals, dim=-1)  # softmax over selected slots
+        probs_all = F.softmax(expanded_logits, dim=-1)  # (tokens, NM)
+        # 2. Extract Top-K from those probabilities
+        topk_gates, topk_idxs = torch.topk(probs_all, self.top_k, dim=-1)  # (tokens, top_k)
 
         # build mask for which selection are null and whiich ar real
         is_real = topk_idxs < self.N  # (tokens, top_k) 
@@ -494,7 +495,6 @@ class MoELayer(nn.Module):
         f = slot_mask.sum(dim=1).sum(dim=0)/ (num_tokens * self.top_k)  # (NM,)
         
          # P_i = average routing probability for slot i
-        probs_all = F.softmax(expanded_logits,dim=-1)  # (tokens, NM)
         P = probs_all.mean(dim=0) # (NM,)
 
         balance_loss = NM * (f * P).sum()
